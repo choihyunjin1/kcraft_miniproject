@@ -1,0 +1,17 @@
+<!-- Tailwind CSS를 이용한 디자인 시스템 -->
+
+{% macro filledButton(text) %}
+<button
+  class="rounded-full bg-primary transition-all duration-300 hover: -translate-y-2 hover: hover:scale-105 hover: shadow-2xl hover:text-white"
+>
+  {{ text }}
+</button>
+{% endmacro %} {% macro outlinedButton(text) %}
+<button class="rounded-full stroke-primary hover:bg-primary hover:text-white">
+  {{ text }}
+</button>
+{% endmacro %} {% macro post(name, tags, context) %}
+<div></div>
+{% endmacro %} {% if locked %}
+<div class="backdrop-blur-sm z-5"></div>
+{%endif %}

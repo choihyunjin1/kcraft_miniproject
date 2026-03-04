@@ -1,0 +1,26 @@
+{
+  "name": "ice_breaking_project",
+  "version": "1.0.0",
+  "description": "hobby-matching-service/ │ ├── app.py # Flask 메인 (모든 라우트 통합)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/choihyunjin1/kcraft_miniproject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/choihyunjin1/kcraft_miniproject/issues"
+  },
+  "homepage": "https://github.com/choihyunjin1/kcraft_miniproject#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^3.4.19"
+  }
+}
