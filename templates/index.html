@@ -1,13 +1,19 @@
+{% import 'components.html' as comp %}
+
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="{{ url_for('static', filename='css/output.css') }}"
+      rel="stylesheet"
+    />
     <title>Document</title>
   </head>
   <body>
     <div class="columns-3xs">
-      {{postcard("사용자 텍스트입니다","태그", "글")}}
+      {{comp.postcard("사용자 텍스트입니다","태그", "글", "2time")}}
     </div>
   </body>
 </html>

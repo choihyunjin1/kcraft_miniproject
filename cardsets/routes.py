@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 from flask import request, jsonify, current_app
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from cardsets import cardsets_bp
 
@@ -21,8 +22,8 @@ def create_cardset():
         "owner_id": user_id,
         "title": title,
         "cards": [],
-        "created_at": datetime.utcnow(),
-        "updated_at": datetime.utcnow()
+        "created_at": datetime(),
+        "updated_at": datetime()
     }
     res = db.card_sets.insert_one(doc)
 
@@ -52,9 +53,21 @@ def add_card(set_id):
     if not word:
         return jsonify({"result": "fail", "msg": "word 필수"}), 400
 
-    oid = ObjectId(set_id)
-    card = {"card_id": str(uuid4()), "text": word}
+    try:
+        oid = ObjectId(set_id)
+    except (InvalidId, TypeError):
+        return jsonify({"result": "fail", "msg": "잘못된 set_id"}), 400
 
+    row = db.card_sets.find_one({"_id": oid})
+    if not row:
+        return jsonify({"result": "fail", "msg": "카드셋 없음"}), 404
+
+    # 같은 카드 텍스트 중복 방지
+    exists = any((c.get("text") or "").strip() == word for c in row.get("cards", []))
+    if exists:
+        return jsonify({"result": "fail", "msg": "이미 같은 카드가 있습니다."}), 409
+
+    card = {"card_id": str(uuid4()), "text": word}
     db.card_sets.update_one(
         {"_id": oid},
         {"$push": {"cards": card}, "$set": {"updated_at": datetime.utcnow()}}
@@ -74,3 +87,19 @@ def delete_card(set_id, card_id):
     )
 
     return jsonify({"result": "success"}), 200
+
+
+@cardsets_bp.route("/<set_id>", methods=["DELETE"])
+def delete_cardset(set_id):
+    db = current_app.config["DB"]
+
+    try:
+        oid = ObjectId(set_id)
+    except (InvalidId, TypeError):
+        return jsonify({"result": "fail", "msg": "잘못된 set_id"}), 400
+
+    result = db.card_sets.delete_one({"_id": oid})
+    if result.deleted_count == 0:
+        return jsonify({"result": "fail", "msg": "카드셋 없음"}), 404
+
+    return jsonify({"result": "success", "msg": "카드셋 삭제 완료"}), 200

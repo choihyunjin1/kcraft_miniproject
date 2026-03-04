@@ -1,0 +1,36 @@
+<!-- Tailwind CSS를 이용한 디자인 시스템 -->
+
+{% macro filledButton(text) %}
+<button
+  class="rounded-full bg-primary px-4 py-2 transition-all duration-300 hover:-translate-y-2 hover: hover:scale-105 hover: shadow-2xl hover:text-white"
+>
+  {{ text }}
+</button>
+{% endmacro %} {% macro outlinedButton(text) %}
+<button class="rounded-full border-primary hover:bg-primary hover:text-white">
+  {{ text }}
+</button>
+{% endmacro %} {% macro postcard(name, tags, context, time) %}
+<a
+  class="flex border flex-col rounded-lg bg-card_bg px-4 py-2 border-card_border shadow hover:drop-shadow-lg transition-all duration-100"
+>
+  <h3 class="text-2xl font-bold font-plain_text">{{ name }}</h3>
+  <span class="text-xs text-primary pb-4">{{ tags }}</span>
+  <hr class="my-4 border-gray-100" />
+  <p class="line-clamp-4 text-sm">{{ context }}</p>
+  <div class="flex justify-between">
+    <button class="text-plain_text">Comments</button>
+    <span>{{time}}</span>
+  </div>
+</a>
+{% endmacro %} {% macro page(icon, text) %} {% if selected %}
+<a
+  class="flex items-center rounded-full bg-primary text-card_bg px-4 py-2 gap-2"
+  >{{icon|safe}}{{text}}</a
+>
+{% else %}
+<a
+  class="flex items-center rounded-full bg-card_bg text-plain_text px-4 py-2 gap-2"
+  >{{icon|safe}}{{text}}</a
+>
+{% endif %} {% endmacro %}
