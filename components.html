@@ -2,16 +2,22 @@
 
 {% macro filledButton(text) %}
 <button
-  class="rounded-full bg-primary transition-all duration-300 hover: -translate-y-2 hover: hover:scale-105 hover: shadow-2xl hover:text-white"
+  class="rounded-full bg-primary px-4 py-2 transition-all duration-300 hover: -translate-y-2 hover: hover:scale-105 hover: shadow-2xl hover:text-white"
 >
   {{ text }}
 </button>
 {% endmacro %} {% macro outlinedButton(text) %}
-<button class="rounded-full stroke-primary hover:bg-primary hover:text-white">
+<button class="rounded-full border-primary hover:bg-primary hover:text-white">
   {{ text }}
 </button>
 {% endmacro %} {% macro post(name, tags, context) %}
-<div></div>
+<a
+  class="block border rounded-lg bg-card_bg px-4 py-2 border-card_border shadow"
+>
+  <h3 class="text-2xl font-bold">{{ name }}</h3>
+  <span class="text-xs">{{ tags }}</span>
+  <p class="text-sm">{{ context }}</p>
+</a>
 {% endmacro %} {% if locked %}
 <div class="backdrop-blur-sm z-5"></div>
 {%endif %}

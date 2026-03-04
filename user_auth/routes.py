@@ -20,7 +20,7 @@ def register():
     user_mail = (data.get("user_mail") or "").strip()
 
     if not user_id or not password or not name or not user_mail or not gender:
-        return jsonify({"result": "fail", "msg": "user_id, password, name 필수"}), 400
+        return jsonify({"result": "fail", "msg": "user_id, password, name, teg 필수"}), 400
 
     db = current_app.config["DB"]
     try:
@@ -30,6 +30,7 @@ def register():
             "name": name,
             "gender": gender,
             "created_at": datetime.now(timezone.utc),
+            "user_mail": user_mail,
         })
     except DuplicateKeyError:
         return jsonify({"result": "fail", "msg": "이미 존재하는 user_id"}), 409
