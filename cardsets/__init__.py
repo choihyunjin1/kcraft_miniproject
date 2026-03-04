@@ -1,5 +1,3 @@
 from flask import Blueprint
-
-cardsets_bp = Blueprint("cardsets", __name__, url_prefix="/cardsets")
-
+cardsets_bp = Blueprint("cardsets", __name__)
 from cardsets import routes

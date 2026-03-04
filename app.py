@@ -16,9 +16,7 @@ from bson.errors import InvalidId
 from db import db
 from posts.routes import posts_bp
 
-# open_ai
-load_dotenv()
-open_gpt = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 # Flask
 app = Flask(__name__)
@@ -72,12 +70,18 @@ from gacha import gacha_bp
 app.register_blueprint(gacha_bp, url_prefix="/gacha")
 #-------------------------------
 
-# 카드 게임 등록----------------
+# 카드 셋 등록 제작기-------------
 # from cardsets import cardsets_bp
 # app.register_blueprint(cardsets_bp)  
 from cardsets import cardsets_bp
 app.register_blueprint(cardsets_bp, url_prefix="/cardsets")
 print(app.url_map)
 #-------------------------------
+
+# 카드 게임 등록-----------------
+from signals import signals_bp
+app.register_blueprint(signals_bp, url_prefix="/signals")
+#-------------------------------
+
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)

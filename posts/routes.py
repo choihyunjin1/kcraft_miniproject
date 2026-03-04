@@ -35,7 +35,6 @@ def get_post():
 
     return jsonify({'result': 'success', 'posts': all_post})
 
-
 # post / read_user
 @posts_bp.route('/post/<user_id>', methods=['GET'])
 def get_my_post(user_id):
