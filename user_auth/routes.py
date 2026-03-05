@@ -40,7 +40,7 @@ def register():
            
             "jungle_batch": jungle_batch,
             "jungle_class": jungle_class,
-            "key_count": 3
+            "key_count": 20
         })
     except DuplicateKeyError:
         return jsonify({"result": "fail", "msg": "이미 존재하는 아이디"}), 409
