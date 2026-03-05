@@ -17,7 +17,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for post in posts %} {{ comp.postcard(post.author, post.tag|join(' '),
     post.content, time = post.created_at, url = url_for('posts.get_one_post',
-    pass_idx=post._id)) }} {% endfor %}
+    pass_idx=post._id, user_id=user_id)) }} {% endfor %}
   </div>
 </div>
 
@@ -30,13 +30,6 @@
   rows="6"
   placeholder="오늘의 하루는?"
 ></textarea>
-<div class="flex justify-between items-center mt-4">
-  <span id="write-char-count" class="text-sm text-gray-400">0 characters</span>
-  <div class="flex gap-3">
-    {{ comp.outlinepopupButton("취소하기", "close_writing()") }} {{
-    comp.filledpopupButton("포스팅", "submit_post()") }}
-  </div>
-</div>
 
 <input
   id="write-tags"
@@ -45,6 +38,13 @@
   placeholder="태그를 쉼표로 구분해서 입력 (예: 영화,커피,운동)"
 />
 
+<div class="flex justify-between items-center mt-4 px-1">
+  <span id="write-char-count" class="text-sm text-gray-400">0 characters</span>
+  <div class="flex gap-3">
+    {{ comp.outlinepopupButton("취소하기", "close_writing()") }} {{
+    comp.filledpopupButton("포스팅", "submit_post()") }}
+  </div>
+</div>
 {% endcall %} {% call comp.custom_popup("gacha-popup", "close_gacha_popup()") %}
 <div class="flex flex-col items-center justify-center py-4 gap-6">
   <p

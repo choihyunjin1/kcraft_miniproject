@@ -29,9 +29,9 @@
       <div class="flex items-center justify-between gap-4">
         {% block searchbar %} {% endblock %}
         <div class="flex ml-auto items-center gap-4">
-          {{ comp.page_toggle('<i class="fa-regular fa-house"></i>', "홈", "/" )
-          }} {{ comp.page_toggle('<i class="fa-solid fa-person"></i>', "내
-          정보", url_for('mypage', user_id=request.args.get('user_id', ''))) }}
+          {{ comp.page_toggle('<i class="fa-solid fa-eye"></i>', "홈", "/" ) }}
+          {{ comp.page_toggle('<i class="fa-solid fa-person"></i>', "내 정보",
+          url_for('mypage', user_id=request.args.get('user_id', ''))) }}
           <div id="key-count-badge">
             {{ comp.outlinedText("열쇠 " ~ key_count ~ "개") }}
           </div>

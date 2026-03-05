@@ -11,7 +11,9 @@ posts_bp = Blueprint('posts', __name__)
 def post_my_info():
     user_id = (request.args.get("user_id") or "").strip()
     input_content = request.form['input_content']
-    author = request.form['user_name']
+    #author = request.form['user_name']
+    user = db.users.find_one({"user_id": user_id}, {"_id": 0, "name": 1})
+    author = user.get("name") if user and user.get("name") else user_id
     tag = request.form.getlist('tags_list')
 
     post = {

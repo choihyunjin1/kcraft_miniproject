@@ -35,26 +35,35 @@
   {{ text }}
 </div>
 {% endmacro %} {% macro postcard(name, tags, context, time, url = "#") %}
-<a class="{{ card(variant='postcard') }}" href="{{url}}">
+<a class="{{ card(variant='postcard') }} transition-all duration-300 {% if context == 'dufthlwkarma' %} !bg-gradient-to-br from-gray-50 to-gray-200 !border-gray-300 {% endif %}" href="{{url}}">
+  
   <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
   <span class="text-xs text-primary pb-3">{{ tags }}</span>
   <hr class="my-2 border-gray-100" />
-  <div>
-    <p class="line-clamp-4 pb-4 text-sm">{{ context }}</p>
-    <!--더미 텍스트는 서버측에서 판단해서 넣기-->
-    {%if locked == true%}
-    <div class="backdrop-blur-sm bg-primary/30"></div>
-    <div class="flex justify-between">
-      <button class="text-plain_text">Comments</button>
-      <span>{{time}}</span>
-    </div>
+  
+  <div class="flex-1 flex flex-col min-h-0">
+    
+    {% if context == "dufthlwkarma" %}
+      <div class="flex-1 flex items-center justify-center">
+        <div onclick="event.preventDefault();">
+          {{ filledpopupButton("🔑 열쇠로 잠금 해제하기", onclick="open_popup()") }}
+        </div>
+      </div>
+      
     {% else %}
-    <div class="flex justify-between">
-      <button class="text-primary">Comments</button>
-      <span>{{time}}</span>
+      <p class="line-clamp-4 text-sm">{{ context }}</p>
+    {% endif %}
+    
+    <div class="flex justify-between items-center mt-auto pt-4">
+      {% if context == "dufthlwkarma" %}
+        <span class="text-gray-400 font-bold">Comments</span>
+      {% else %}
+        <span class="text-primary font-bold">Comments</span>
+      {% endif %}
+      <span class="text-sm text-gray-400">{{ time }}</span>
     </div>
+
   </div>
-  {% endif %}
 </a>
 {% endmacro %} {% macro postlong(name, tags, context, time) %}
 <div class="{{ card(variant='default') }} mb-6">
@@ -181,5 +190,5 @@
 flex-col border rounded-lg bg-card_bg px-4 py-2 border-card_border shadow
 drop-shadow-md" %} {% set size_presets = { "postcard": "h-64
 hover:drop-shadow-lg transition-all duration-100 cursor-pointer", "default": "",
-"profile" : "w-full h-52", "popup" : "w-96 h-96" } %} {{base_tags }} {{
+"profile" : "w-full h-52", "popup" : "w-96 h-96" } %} {{base_tags }} {
 size_presets[variant] }} {% endmacro %}

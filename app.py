@@ -46,7 +46,7 @@ def home():
     for post in all_post:
         post["_id"] = str(post["_id"])
         if user_id not in post.get('register', []):
-            post['content'] = "열쇠를 사용하여 잠금을 해제하세요!"
+            post['content'] = "dufthlwkarma"
 
     return render_template("index.html", posts=all_post, user_id=user_id, q=q)
 
