@@ -14,6 +14,15 @@
 >
   {{ text }}
 </button>
+{% endmacro %}
+
+{% macro outlinepopupButton(text, onclick = "") %}
+<button
+  class="rounded-full bg-background px-4 py-2 border-2 border-search_text hover:-translate-y-2 hover:scale-105 hover:shadow-2xl text-plain_text"
+  onclick="{{ onclick }}"
+>
+  {{ text }}
+</button>
 {% endmacro %} {% macro outlinedButton(text,url) %}
 <a
   class="inline-flex rounded-full border-primary border-2 px-4 py-2 hover:bg-primary hover:text-white"
@@ -22,7 +31,9 @@
   {{ text }}
 </a>
 {% endmacro %} {% macro outlinedText(text) %}
-<div class="rounded-full border-primary border-2 px-4 py-2">{{ text }}</div>
+<div class="rounded-3xl border-primary bg-background border-2 px-4 py-2">
+  {{ text }}
+</div>
 {% endmacro %} {% macro postcard(name, tags, context, time, url = "#") %}
 <a class="{{ card(variant='postcard') }}" href="{{url}}">
   <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
@@ -46,8 +57,8 @@
   {% endif %}
 </a>
 {% endmacro %} {% macro postlong(name, tags, context, time) %}
-<div class="{{ card(variant='default') }} pb-6">
-  <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
+<div class="{{ card(variant='default') }} mb-6">
+  <h3 class="text-2xl font-bold font-plain_text pt-4 pb-2">{{ name }}</h3>
   <span class="text-xs text-primary pb-3">{{ tags }}</span>
   <hr class="my-2 border-gray-100" />
   <div>
@@ -60,7 +71,7 @@
 <div class="pt-4 {{ card(variant='default') }}">
   <h4 class="font-bold pb-4">Comments ({{ comment_number }})</h4>
   <textarea
-    class="w-full rounded-lg bg-comment_bg px-4 py-4 resize-none focus:outline-primary"
+    class="w-full border rounded-lg bg-comment_bg px-4 py-4 mb-4 resize-none focus:outline-none focus:border-primary"
     rows="4"
     placeholder="댓글 쓰기"
   ></textarea>
@@ -89,27 +100,86 @@
   class="flex items-center rounded-full bg-card_bg text-plain_text px-4 py-2 gap-2"
   >{{icon|safe}}{{text}}
 </a>
-{% endif %} {% endmacro %} {% macro searchbar(text) %}
+{% endif %} {% endmacro %} {% macro searchbar(text, value="", user_id="") %}
 <form
+  method="GET"
+  action="{{ url_for('home') }}"
   class="flex rounded-full gap-2 py-3 px-5 bg-search_bg w-full focus:outline-primary"
->
+  {% if user_id %}
+  <input type="hidden" name="user_id" value="{{ user_id }}" />
+  {% endif %}
   <i class="fa-solid fa-magnifying-glass"></i>
   <input
     type="text"
-    placeholder="{{text}}"
+    name="q"
+    value="{{ value }}"
+    placeholder="{{ text }}"
     class="bg-transparent outline-none w-full"
   />
 </form>
 {% endmacro %} {% macro profile(name,user_id, message) %}
 <div class="{{ card(variant='default') }}">
-  <div class="flex flex-col gap-4 py-6">
-    <span class="text-2xl text-primary ml-2">{{ name }}</span>
-    <span class="text-xl text-primary ml-2">{{ user_id }}</span>
-    <p class="text-xl text-plain_text">{{ message }}</p>
+  <div class="flex flex-col gap-4 pt-4 pb-6 ml-2">
+    <span class="text-3xl text-black font-bold pt-2 pb-4">{{ name }}</span>
+    <span class = "text-sm text-search_text">자기소개</span>
+    <p class="text-lg text-plain_text">{{ message }}</p>
+    <span class = "text-sm text-search_text">취미</span>
+    <span class="text-lg text-primary ml-2">{{ user_id }}</span>
+    
   </div>
 </div>
-{% endmacro %} {% macro card(variant="default") %} {% set base_tags = "flex
-flex-col border rounded-lg bg-card_bg px-4 py-2 border-card_border shadow" %} {%
-set size_presets = { "postcard": "h-64 hover:drop-shadow-lg transition-all
-duration-100 cursor-pointer", "default": "", "profile" : "w-full h-52", "popup"
-: "w-96 h-96" } %} {{base_tags }} {{ size_presets[variant] }} {% endmacro %}
+{% endmacro %} {% macro lover(name, message, score, hobbies, comment) %}
+<div class="p-6 flex flex-col gap-6 {{ card(variant='default') }}">
+  
+  <div class="flex items-center gap-4">
+    <span class="text-2xl font-bold text-primary ml-2">{{ name }}</span>
+    <span class="bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
+      {{ score }}
+    </span>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div>
+      <h3 class="text-sm text-gray-500 font-bold mb-2">자기소개</h3>
+      <p class="text-plain_text">{{ message }}</p>
+    </div>
+    
+    <div>
+      <h3 class="text-sm text-gray-500 font-bold mb-2">공통 취미</h3>
+      <div class="flex gap-2">
+        {% for hobby in hobbies %}
+          <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">{{ hobby }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <p class="text-plain_text bg-primary/5 p-4 rounded-xl border border-primary/10">
+    {{ comment }}
+  </p>
+</div>
+{% endmacro %}
+
+{% macro hobbycard(hobby) %}
+<div class = "flex items-center justify-center {{card(variant='popup')}}">
+  <h3 class = "font-bold text-7xl">{{hobby}}</h3>
+</div>
+
+{% endmacro %}
+
+{% macro custom_popup(popup_id, close_func="") %}
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" id="{{ popup_id }}">
+  <div class="absolute inset-0 bg-black/40 z-20" onclick="{{ close_func }}"></div>
+
+  <div class="relative z-30 w-full max-w-lg bg-white rounded-[24px] shadow-xl flex flex-col p-6">
+    {{ caller() }}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro card(variant="default") %} {% set base_tags = "flex
+flex-col border rounded-lg bg-card_bg px-4 py-2 border-card_border shadow
+drop-shadow-md" %} {% set size_presets = { "postcard": "h-64
+hover:drop-shadow-lg transition-all duration-100 cursor-pointer", "default": "",
+"profile" : "w-full h-52", "popup" : "w-96 h-96" } %} {{base_tags }} {{
+size_presets[variant] }} {% endmacro %}

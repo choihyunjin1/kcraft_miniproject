@@ -1,59 +1,167 @@
 {% import 'components.html' as comp %} {% extends "base.html" %} {% block title
-%}홈{% endblock %}
-
-<div class="flex-col">
-  {% block searchbar %}
-  <div class="flex-1">{{ comp.searchbar("찾기..") }}</div>
-  {% endblock %} {% block content %}
+%}홈{% endblock %} {% block searchbar %}
+<div class="flex-1">{{ comp.searchbar("찾기..", q or "", user_id or "") }}</div>
+{% endblock %} {% block content %}
+<div class="flex flex-col">
   <div class="flex my-10 justify-between items-center">
     <h2 class="text-2xl font-bold">훔쳐보기</h2>
     <div class="flex gap-3">
-      {{comp.outlinedButton("글쓰기")}} {{comp.filledpopupButton("뽑기",
-      onclick="open_popup()")}}
+      {{ comp.outlinedButton("글쓰기", "javascript:open_writing()") }}
+      {{comp.filledpopupButton("뽑기 (열쇠 1개 소모)", onclick="play_gacha()")}}
+      {{ comp.filledpopupButton("로그인", onclick="location.href='/login'") }}
+      {{ comp.filledpopupButton("회원가입", onclick="location.href='/register'")
+      }} {{ comp.filledpopupButton("카드게임", onclick="go_cardgame()") }}
     </div>
   </div>
+
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <!-- ${document}.ready(function () {
-      get_post();
-    }); -->
-    {{comp.postcard("김철수","#커피 #헬스", "주말 아침이면 항상 집 근처에 있는
-    작은 로스터리 카페에 들러 따뜻한 라떼 한 잔을 마시는 것이 소소한 루틴입니다.
-    갓 볶은 원두 특유의 고소한 향기와 부드러운 우유 거품이 어우러지면 한 주 동안
-    쌓였던 피로가 눈 녹듯 사라지는 기분이 들어요. 특히 비가 오는 날에는 창가
-    자리에 앉아 떨어지는 빗방울을 구경하며 책을 읽다 보면 시간이 어떻게 가는지
-    모를 정도로 푹 빠지게 되더라고요. 역시 커피는 여유를 마시는 음료인 것
-    같습니다.", "2시간 전", url_for('post_detail'))}}
-    <!--테스트용 url 도입-->
-    {{comp.postcard("사용자 텍스트입니다","#인스타그램", "지난 휴가 때 다녀왔던
-    바다의 푸른 풍경이 아직도 눈앞에 아른거립니다. 해안 도로를 따라 드라이브를
-    하며 맞았던 시원한 바닷바람과, 해 질 녘 수평선 너머로 붉게 물들던 노을은
-    정말 평생 잊지 못할 장관이었어요.", "3시간 전")}} {{comp.postcard("사용자
-    텍스트입니다","#태그검색기능파이팅 #정글", "글", "1일 전")}}
-    {{comp.postcard("사용자 텍스트입니다","#태그1 #태그2 #영어
-    #asdfkjahsdlkfjhasidhf", "글", "2주일 전")}}
+    {% for post in posts %} {{ comp.postcard(post.author, post.tag|join(' '),
+    post.content, time = post.created_at, url = url_for('posts.get_one_post',
+    pass_idx=post._id)) }} {% endfor %}
   </div>
 </div>
-<div class="hidden justify-center" id="popup">
-  <div class="bg-black/60 z-20 fixed inset-0"></div>
-  <div class="relative z-30 {{comp.card(variant='popup') }}">
-    <p id="gacha-result-text"></p>
-    {{comp.filledpopupButton("닫기", onclick="close_popup()")}}
+
+{% call comp.custom_popup("writing", "close_writing()") %}
+<h2 class="text-2xl font-bold text-gray-900 mb-4">글 작성하기</h2>
+
+<textarea
+  id="write-content"
+  class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-4 resize-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-gray-700 placeholder-gray-400"
+  rows="6"
+  placeholder="오늘의 하루는?"
+></textarea>
+<div class="flex justify-between items-center mt-4">
+  <span id="write-char-count" class="text-sm text-gray-400">0 characters</span>
+  <div class="flex gap-3">
+    {{ comp.outlinepopupButton("취소하기", "close_writing()") }} {{
+    comp.filledpopupButton("포스팅", "submit_post()") }}
   </div>
 </div>
+
+<input
+  id="write-tags"
+  type="text"
+  class="w-full mt-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-gray-700 placeholder-gray-400"
+  placeholder="태그를 쉼표로 구분해서 입력 (예: 영화,커피,운동)"
+/>
+
+{% endcall %} {% call comp.custom_popup("gacha-popup", "close_gacha_popup()") %}
+<div class="flex flex-col items-center justify-center py-4 gap-6">
+  <p
+    id="gacha-text"
+    class="text-center text-lg font-bold whitespace-pre-wrap text-gray-800"
+  ></p>
+  <button
+    onclick="close_gacha_popup()"
+    class="bg-primary text-white font-bold rounded-full px-8 py-2 hover:opacity-90 transition-opacity"
+  >
+    닫기
+  </button>
+</div>
+{% endcall %}
+
 <script>
-  function open_popup() {
-    document.getElementById('popup').classList.remove('hidden');
-    fetch('/gacha', {method: 'POST'})
-      .then(res => res.json())
-      .then(data =>())
-       document.getElementById('gacha-result-text').innerText =' 축하합니다 ! ' + data.result + '이(가) 나왔습니다!';
+  const user_id =
+    "{{ user_id }}".trim() ||
+    new URLSearchParams(window.location.search).get("user_id") ||
+    "";
+
+  function play_gacha() {
+    const popup = document.getElementById("gacha-popup");
+    const textElem = document.getElementById("gacha-text");
+
+    if (!user_id) {
+      textElem.innerText = "user_id가 없습니다.";
+      popup.classList.remove("hidden");
+      return;
+    }
+
+    fetch("/gacha/draw", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: user_id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result === "success") {
+          const keyCountBadge = document.getElementById("key-count-badge");
+          if (keyCountBadge) {
+            keyCountBadge.innerText = "열쇠 " + data.key_count + "개";
+          }
+          textElem.innerText = `축하합니다! ${data.picked}개 얻었습니다!\n(남은 열쇠: ${data.key_count})`;
+        } else {
+          textElem.innerText = data.msg;
+        }
+
+        popup.classList.remove("hidden");
+      });
+  }
+  function go_cardgame() {
+    if (!user_id) {
+      alert("user_id가 없습니다.");
+      return;
+    }
+    location.href = "/cardgame?user_id=" + encodeURIComponent(user_id);
   }
 
-  function close_popup() {
-    document.getElementById('popup').classList.add('hidden');
+  function close_gacha_popup() {
+    document.getElementById("gacha-popup").classList.add("hidden");
+
+    if (user_id) {
+      window.location.href = "/?user_id=" + encodeURIComponent(user_id);
+    } else {
+      window.location.reload();
+    }
   }
 
-  const user_id = "{{ user_id }}";
+  function open_writing() {
+    if (!user_id) {
+      alert("로그인 후 글쓰기가 가능합니다.");
+      return;
+    }
+    document.getElementById("writing").classList.remove("hidden");
+  }
+
+  function close_writing() {
+    document.getElementById("writing").classList.add("hidden");
+    document.getElementById("write-content").value = "";
+    document.getElementById("write-tags").value = "";
+    document.getElementById("write-char-count").innerText = "0 characters";
+  }
+
+  async function submit_post() {
+    const content = document.getElementById("write-content").value.trim();
+    const tagsRaw = document.getElementById("write-tags").value.trim();
+
+    if (!content) {
+      alert("내용을 입력해주세요!");
+      return;
+    }
+
+    const tags = tagsRaw
+      ? tagsRaw
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t.length > 0)
+      : [];
+
+    const formData = new FormData();
+    formData.append("user_name", user_id);
+    formData.append("input_content", content);
+    tags.forEach((tag) => formData.append("tags_list", tag));
+
+    const res = await fetch(`/post?user_id=${encodeURIComponent(user_id)}`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      alert("글 작성에 실패했습니다.");
+      return;
+    }
+
+    close_writing();
+    window.location.href = "/?user_id=" + encodeURIComponent(user_id);
+  }
 </script>
-
 {% endblock %}

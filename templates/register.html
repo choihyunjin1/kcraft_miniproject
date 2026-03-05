@@ -1,0 +1,124 @@
+{% import 'components.html' as comp %} {% extends "base.html" %} {% block title
+%}Register{% endblock %} {% block content %}
+<div class="flex justify-center my-10">
+  <div class="w-full max-w-sm bg-white border rounded-xl p-8 shadow-sm">
+    <h2 class="text-2xl font-bold mb-6 text-center">회원가입</h2>
+
+    <form id="register-form" class="flex flex-col gap-4">
+      <input
+        id="user_id"
+        placeholder="ID"
+        type="text"
+        class="border rounded-md px-3 py-2 focus:outline-none focus:border-primary"
+      />
+      <input
+        id="password"
+        placeholder="Password"
+        type="password"
+        class="border rounded-md px-3 py-2 focus:outline-none focus:border-primary"
+      />
+      <input
+        id="name"
+        placeholder="이름"
+        type="text"
+        class="border rounded-md px-3 py-2 focus:outline-none focus:border-primary"
+      />
+
+      <div class="flex gap-4 px-1">
+        <label
+          ><input
+            type="radio"
+            name="gender"
+            value="male"
+            id="male"
+            class="mr-1"
+          />남자</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="gender"
+            value="female"
+            id="female"
+            class="mr-1"
+          />여자</label
+        >
+      </div>
+
+      <select
+        id="jungle_batch"
+        class="border rounded-md px-3 py-2 text-gray-600"
+      >
+        <option value="" disabled selected>기수 선택</option>
+        {% for i in range(1, 51) %}
+        <option value="{{ i }}">{{ i }}기</option>
+        {% endfor %}
+      </select>
+
+      <select
+        id="jungle_class"
+        class="border rounded-md px-3 py-2 text-gray-600 focus:outline-none focus:border-primary"
+      >
+        <option value="" disabled selected>강의실 선택</option>
+        {% for i in range(301, 304) %}
+        <option value="{{ i }}">{{ i }}호</option>
+        {% endfor %}
+      </select>
+
+      <textarea
+        id="user_introduction"
+        placeholder="자기소개"
+        rows="3"
+        class="border rounded-md px-3 py-2 resize-none focus:outline-none focus:border-primary"
+      ></textarea>
+
+      <button
+        type="submit"
+        class="bg-primary text-white font-bold rounded-md py-2 mt-2"
+      >
+        회원가입
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 자바스크립트는 네가 만든 그대로가 완벽해!
+  document
+    .getElementById("register-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const checkedGender = document.querySelector(
+        'input[name="gender"]:checked',
+      );
+
+      const payload = {
+        user_id: document.getElementById("user_id").value.trim(),
+        password: document.getElementById("password").value.trim(),
+        name: document.getElementById("name").value.trim(),
+        gender: checkedGender ? checkedGender.value : "",
+        jungle_batch: document.getElementById("jungle_batch").value,
+        jungle_class: document.getElementById("jungle_class").value,
+        user_introduction: document
+          .getElementById("user_introduction")
+          .value.trim(),
+      };
+
+      const res = await fetch("/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (data.result === "success") {
+        alert("회원가입 성공");
+        location.href = "/login";
+      } else {
+        alert(data.msg || "회원가입 실패");
+      }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% import 'components.html' as comp %} {% extends "base.html" %} {% block title
+%}매칭 찾기{% endblock %} {% block content %}
+<div class="flex flex-col items-center justify-center my-10">
+  <h2 class="text-2xl font-bold mb-6">운명의 짝 찾기</h2>
+  <p id="cardgame-status" class="text-sm text-gray-500 mb-4"></p>
+
+  <div id="card-container" class="relative w-full max-w-sm min-h-[450px]">
+    <div class="match-card absolute inset-0">
+      <div
+        class="flex items-center justify-center {{comp.card(variant='popup')}}"
+      >
+        <h3 id="hobby-text" class="font-bold text-6xl text-center">
+          로딩중...
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div id="cardgame-buttons" class="flex gap-8 mt-8 z-10">
+    <button
+      onclick="handleMatch('dislike')"
+      class="w-16 h-16 bg-white border border-gray-200 rounded-full text-red-500 text-3xl shadow-md hover:bg-gray-50 hover:scale-110"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <button
+      onclick="handleMatch('like')"
+      class="w-16 h-16 bg-white border border-gray-200 rounded-full text-green-500 text-3xl shadow-md hover:bg-gray-50 hover:scale-110"
+    >
+      <i class="fa-solid fa-heart"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+  let user_id = "";
+  let keywords = [];
+  let currentIndex = 0;
+  let submitting = false;
+
+  function renderCard() {
+    const hobbyText = document.getElementById("hobby-text");
+    const status = document.getElementById("cardgame-status");
+    if (!hobbyText || !status) return;
+
+    if (currentIndex >= keywords.length) {
+      hobbyText.innerText = "완료";
+      status.innerText = "카드게임이 완료되었습니다.";
+      const buttons = document.getElementById("cardgame-buttons");
+      if (buttons) buttons.classList.add("hidden");
+      setTimeout(() => {
+        if (user_id) {
+          window.location.href =
+            "/mypage?user_id=" + encodeURIComponent(user_id);
+        }
+      }, 800);
+      return;
+    }
+
+    hobbyText.innerText = keywords[currentIndex];
+    status.innerText = `카드 ${currentIndex + 1} / ${keywords.length}`;
+  }
+
+  async function initCardGame() {
+    const params = new URLSearchParams(window.location.search);
+    user_id = (params.get("user_id") || "").trim();
+    const status = document.getElementById("cardgame-status");
+
+    if (!user_id) {
+      if (status)
+        status.innerText =
+          "user_id가 없습니다. /cardgame?user_id=아이디 로 접속하세요.";
+      const buttons = document.getElementById("cardgame-buttons");
+      if (buttons) buttons.classList.add("hidden");
+      return;
+    }
+
+    const res = await fetch("/signals/keywords");
+    const data = await res.json();
+    keywords = Array.isArray(data.keywords) ? data.keywords : [];
+    renderCard();
+  }
+
+  async function handleMatch(type) {
+    if (submitting || currentIndex >= keywords.length) return;
+    submitting = true;
+    const direction = type === "like" ? "right" : "left";
+
+    try {
+      const res = await fetch("/signals/swipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id,
+          index: currentIndex,
+          direction,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.result === "success") {
+        currentIndex = Number.isInteger(data.next_index)
+          ? data.next_index
+          : currentIndex + 1;
+        renderCard();
+      }
+    } finally {
+      submitting = false;
+    }
+  }
+
+  window.handleMatch = handleMatch;
+  initCardGame();
+</script>
+{% endblock %}

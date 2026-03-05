@@ -108,13 +108,5 @@ postcard = 프런트 사람들 정보 카드
 | 댓글 작성        | `/post/comment`        | `POST`     |
 | 댓글 삭제        | `/post/comment/delete` | `POST`     |
 
-{
-"user_id": "mj_1201",
-"password": "Pass1234!",
-"name": "김민정",
-"gender": "female",
-"user_mail": "mj_1201@example.com",
-"user_introduction": "운동과 독서를 좋아해요.",
-"jungle_batch": "12",
-"jungle_class": "303"
-}
+
+---------------------테스트 계정----------------------

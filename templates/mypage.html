@@ -1,4 +1,85 @@
-{% import 'components.html' as comp %} {% extends "base.html" %} {% block title
-%}내 정보{% endblock %} {% block content %} {{comp.profile("name", "myid",
-"messageasdfasdfasdjjfjasjdfjajsdfasdfasdfasdfasdfasdfasdfasdfasdfasdf")}} {%
-endblock %}
+{% import 'components.html' as comp %} {% extends "base.html" %} {% block
+title%}내 정보{% endblock %} {% block content %} {{comp.profile(profile_name,
+profile_user_id, profile_intro) }}
+
+<div x-data="{tab : 1}" class="{{comp.card(variant='default')}} pt-4 pb-4">
+  <div class="flex border-b border-gray-200 mb-6">
+    <button
+      @click="tab = 1"
+      :class="tab === 1 ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+      class="px-6 py-3 border-b-2 text-lg"
+    >
+      내가 쓴 글
+    </button>
+
+    <button
+      @click="tab = 2"
+      :class="tab === 2 ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+      class="px-6 py-3 border-b-2 text-lg"
+    >
+      매칭 상대
+    </button>
+  </div>
+
+  <div>
+    <div x-show="tab === 1">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for post in my_post %} {{ comp.postcard( post.author, post.tag|join('
+        '), post.content, post.created_at.strftime('%Y-%m-%d'),
+        url_for('posts.get_one_post', pass_idx=post._id) ) }} {% endfor %}
+      </div>
+    </div>
+    <div x-show="tab === 2">
+      <div id="ai-match-list" class="flex flex-col gap-4">
+        <p class="text-sm text-gray-500">AI 추천 결과를 불러오는 중...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (async function () {
+    const wrap = document.getElementById("ai-match-list");
+    const params = new URLSearchParams(window.location.search);
+    const user_id = (params.get("user_id") || "").trim();
+
+    if (!user_id) {
+      wrap.innerHTML =
+        '<p class="text-sm text-red-500">user_id가 없습니다. /mypage?user_id=아이디 로 접속하세요.</p>';
+      return;
+    }
+
+    try {
+      const res = await fetch("/ai_recommend/" + encodeURIComponent(user_id));
+      const data = await res.json();
+
+      if (!Array.isArray(data.partners) || data.partners.length === 0) {
+        wrap.innerHTML =
+          '<p class="text-sm text-gray-500">추천 결과가 없습니다.</p>';
+        return;
+      }
+
+      wrap.innerHTML = data.partners
+        .map(
+          (p) => `
+        <div class="p-6 flex flex-col gap-4 border rounded-lg bg-white shadow-sm">
+          <div class="flex items-center gap-3">
+            <span class="text-xl font-bold text-primary">${p.best_partner || "-"}</span>
+            <span class="bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
+              ${p.partner_score ?? 0}점
+            </span>
+          </div>
+          <p class="text-xs text-gray-500">ID: ${p.best_partner_id || "-"}</p>
+          <p class="text-sm text-gray-800 leading-6">${p.reason || ""}</p>
+        </div>
+      `,
+        )
+        .join("");
+    } catch (e) {
+      wrap.innerHTML =
+        '<p class="text-sm text-red-500">AI 추천 결과를 불러오지 못했습니다.</p>';
+    }
+  })();
+</script>
+
+{%endblock %}

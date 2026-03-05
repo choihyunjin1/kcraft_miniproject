@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Flask, render_template, jsonify, request
 from bson import ObjectId
-
+import re
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -27,8 +27,28 @@ app = Flask(__name__)
 
 # main
 @app.route('/')
+# def home():
+#     return render_template('index.html')
+
 def home():
-    return render_template('index.html')
+    user_id = (request.args.get("user_id") or "").strip()
+    q = (request.args.get("q") or "").strip()
+
+    query = {}
+    if q:
+        
+        keyword = q.lstrip("#") 
+        regex = {"$regex": keyword, "$options": "i"}
+        query = {"tag": regex}
+
+    all_post = list(db.posts.find(query).sort("created_at", -1))
+    
+    for post in all_post:
+        post["_id"] = str(post["_id"])
+        if user_id not in post.get('register', []):
+            post['content'] = "열쇠를 사용하여 잠금을 해제하세요!"
+
+    return render_template("index.html", posts=all_post, user_id=user_id, q=q)
 
 
 ###########################html 테스트용##################
@@ -39,8 +59,52 @@ def post_detail():
 
 @app.route('/mypage')
 def mypage():
+    user_id = (request.args.get("user_id") or "").strip()
+
+    profile_name = "이름 없음"
+    profile_user_id = user_id or "user_id 없음"
+    profile_intro = "자기소개가 없습니다."
+    my_post = []
+
+    if user_id:
+        user = db.users.find_one(
+            {"user_id": user_id},
+            {"_id": 0, "name": 1, "user_id": 1, "user_introduction": 1}
+        )
+        if user:
+            profile_name = user.get("name") or profile_name
+            profile_user_id = user.get("user_id") or profile_user_id
+            profile_intro = user.get("user_introduction") or profile_intro
+
+        my_post = list(db.posts.find({"user_id": user_id}).sort("created_at", -1))
+        for post in my_post:
+            post["_id"] = str(post["_id"])
+
+    return render_template(
+        'mypage.html',
+        profile_name=profile_name,
+        profile_user_id=profile_user_id,
+        profile_intro=profile_intro,
+        my_post=my_post,
+        user_id=user_id,
+    )
+
+@app.route('/login')
+def login():
     # 나중엔 서버에서 진짜 댓글 데이터를 넘겨주겠지만, 지금은 UI 확인용!
-    return render_template('mypage.html')
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    # 나중엔 서버에서 진짜 댓글 데이터를 넘겨주겠지만, 지금은 UI 확인용!
+    return render_template('register.html')
+
+@app.route('/cardgame')
+def cardgame():
+    # 나중엔 서버에서 진짜 댓글 데이터를 넘겨주겠지만, 지금은 UI 확인용!
+    return render_template('cardgame.html')
+
+    
 #########################################
 
 # blue print - post, comment, likes

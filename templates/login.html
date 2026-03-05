@@ -1,0 +1,52 @@
+{% import 'components.html' as comp %} {% extends "base.html" %} {% block title
+%}Login{% endblock %} {% block content %}
+<div class="max-w-md mx-auto mt-12 p-6 bg-white rounded-xl shadow">
+  <h1 class="text-2xl font-bold mb-4">로그인</h1>
+
+  <form id="login-form" class="flex flex-col gap-3">
+    <input
+      id="user_id"
+      placeholder="ID"
+      type="text"
+      class="border rounded px-3 py-2"
+    />
+    <input
+      id="password"
+      placeholder="Password"
+      type="password"
+      class="border rounded px-3 py-2"
+    />
+    <input
+      type="submit"
+      value="로그인"
+      class="bg-primary text-white rounded px-3 py-2 cursor-pointer"
+    />
+    {{comp.outlinepopupButton("회원가입", onclick="location.href='/register'")}}
+  </form>
+</div>
+
+<script>
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const user_id = document.getElementById("user_id").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.result === "success") {
+        location.href = "/?user_id=" + encodeURIComponent(user_id);
+      } else {
+        alert(data.msg || "로그인 실패");
+      }
+    });
+</script>
+{% endblock %}
