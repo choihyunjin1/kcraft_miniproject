@@ -589,6 +589,10 @@ video {
   margin-top: 2.5rem;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
 .line-clamp-4 {
   overflow: hidden;
   display: -webkit-box;
@@ -778,6 +782,10 @@ video {
 
 .pt-4 {
   padding-top: 1rem;
+}
+
+.pb-6 {
+  padding-bottom: 1.5rem;
 }
 
 .text-center {

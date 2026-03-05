@@ -39,7 +39,7 @@
   {% endif %}
 </a>
 {% endmacro %} {% macro postlong(name, tags, context, time) %}
-<div class="{{ card(variant='default') }}">
+<div class="{{ card(variant='default') }} pb-6">
   <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
   <span class="text-xs text-primary pb-3">{{ tags }}</span>
   <hr class="my-2 border-gray-100" />
@@ -51,10 +51,10 @@
 </div>
 {% endmacro %} {% macro commentlist(comment_number) %}
 <div class="pt-4 {{ card(variant='default') }}">
-  <h4 class="font-bold">Comments ({{ comment_number }})</h4>
+  <h4 class="font-bold pb-4">Comments ({{ comment_number }})</h4>
   <textarea
-    class="w-full rounded-lg bg-comment_bg px-4 py-2 resize-none focus:outline-primary"
-    rows="2"
+    class="w-full rounded-lg bg-comment_bg px-4 py-4 resize-none focus:outline-primary"
+    rows="4"
     placeholder="댓글 쓰기"
   ></textarea>
   <div class="flex justify-end mx-2">{{outlinedButton("등록")}}</div>
