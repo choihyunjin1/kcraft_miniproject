@@ -57,7 +57,7 @@ def make_prompt(my_infomation, partner_candidates_list):
 
         [임무]
         사용자의 'signal_preferences'과 'user_introduction'의 일치율을 분석하여 사용자와 가장 합이 잘 맞을 것 같은 최적의 파트너 3명을 선정하라.
-        partner_score는 동점자가 나오지 않도록 하시오.
+        만일 'signal_preferences' 계산 시 동점이 나온다면 'user_introduction'에 가중치를 두어 'partner_score'에서 동점자가 나오지 않도록 하시오.
         reason은 400 내외의 분량을 유지하고, 톤은 사용자가 친금감을 느낄 수 있도록 존칭을 사용하고, 파트너와 어떻게 친해질 수 있는지 방안을 제시하시오.
 
 

@@ -24,10 +24,11 @@
     <div class="fixed top-0 left-0 w-full px-10 py-4 bg-background">
       <div class="flex items-center justify-between gap-4">
         {% block searchbar %} {% endblock %}
-        <div class="flex ml-autoitems-center gap-4">
-          {{ comp.page_toggle('<i class="fa-regular fa-house"></i>', "홈") }} {{
-          comp.page_toggle('<i class="fa-solid fa-person"></i>', "내 정보") }}
-          {{ comp.outlinedText("열쇠 " ~ key_count ~ "개") }}
+        <div class="flex ml-auto items-center gap-4">
+          {{ comp.page_toggle('<i class="fa-regular fa-house"></i>', "홈", "/" )
+          }} {{ comp.page_toggle('<i class="fa-solid fa-person"></i>', "내
+          정보", url_for('mypage')) }} {{ comp.outlinedText("열쇠 " ~ key_count
+          ~ "개") }}
         </div>
       </div>
     </div>

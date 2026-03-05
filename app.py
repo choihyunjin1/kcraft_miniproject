@@ -31,32 +31,17 @@ def home():
     return render_template('index.html')
 
 
-# userid, pw, name, gender, card_result
-# db.users.insert_one({"user_id":"admin", "pw": "1234", 
-#                      "name":"minjeong", "gender": "female", 
-#                      "card_result":"1111",
-#                      "game_key":"3"})
-
-
-# insert hobby_card
-# hobby = ["campping", "dance", "K-pop", "game"] # here
-# hobby_card = [{"card_list" : i} for i in hobby]
-# db.card_content.insert_many(hobby_card)
-
-# board
-# db.posts.insert_one({
-#     "author": "minjeong",
-#     "content": "content ",
-#     "created_at": datetime.now(),
-#     "likes": 0,
-#     "likers":[],
-#     "tag":[]
-# })
-#html 테스트용
+###########################html 테스트용##################
 @app.route('/postdetail')
 def post_detail():
     # 나중엔 서버에서 진짜 댓글 데이터를 넘겨주겠지만, 지금은 UI 확인용!
     return render_template('postdetail.html')
+
+@app.route('/mypage')
+def mypage():
+    # 나중엔 서버에서 진짜 댓글 데이터를 넘겨주겠지만, 지금은 UI 확인용!
+    return render_template('mypage.html')
+#########################################
 
 # blue print - post, comment, likes
 from posts.routes import posts_bp
