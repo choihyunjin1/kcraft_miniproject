@@ -1,23 +1,23 @@
 <!-- Tailwind CSS를 이용한 디자인 시스템 -->
 
 {% macro filledButton(text) %}
-<button
+<a
   class="rounded-full bg-primary px-4 py-2 transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover: shadow-2xl text-card_bg"
+  href="{{url}}"
 >
   {{ text }}
-</button>
-{% endmacro %} {% macro outlinedButton(text) %}
-<button
-  class="rounded-full border-primary border-2 px-4 py-2 hover:bg-primary hover:text-white"
+</a>
+{% endmacro %} {% macro outlinedButton(text,url) %}
+<a
+  class="inline-flex rounded-full border-primary border-2 px-4 py-2 hover:bg-primary hover:text-white"
+  href="{{url}}"
 >
   {{ text }}
-</button>
+</a>
 {% endmacro %} {% macro outlinedText(text) %}
 <div class="rounded-full border-primary border-2 px-4 py-2">{{ text }}</div>
-{% endmacro %} {% macro postcard(name, tags, context, time) %}
-<a
-  class="flex border h-64 flex-col rounded-lg bg-card_bg px-4 py-2 border-card_border border shadow hover:drop-shadow-lg transition-all duration-100"
->
+{% endmacro %} {% macro postcard(name, tags, context, time, url = "#") %}
+<a class="{{ card(variant='postcard') }}" href="{{url}}">
   <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
   <span class="text-xs text-primary pb-3">{{ tags }}</span>
   <hr class="my-2 border-gray-100" />
@@ -38,7 +38,39 @@
   </div>
   {% endif %}
 </a>
-{% endmacro %} {% macro page(icon, text) %} {% if selected %}
+{% endmacro %} {% macro postlong(name, tags, context, time) %}
+<div class="{{ card(variant='default') }}">
+  <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
+  <span class="text-xs text-primary pb-3">{{ tags }}</span>
+  <hr class="my-2 border-gray-100" />
+  <div>
+    <p class="pb-4 text-sm">{{ context }}</p>
+    <hr class="my-2 border-gray-100" />
+    <span>{{time}}</span>
+  </div>
+</div>
+{% endmacro %} {% macro commentlist(comment_number) %}
+<div class="pt-4 {{ card(variant='default') }}">
+  <h4 class="font-bold">Comments ({{ comment_number }})</h4>
+  <textarea
+    class="w-full rounded-lg bg-comment_bg px-4 py-2 resize-none focus:outline-primary"
+    rows="2"
+    placeholder="댓글 쓰기"
+  ></textarea>
+  <div class="flex justify-end mx-2">{{outlinedButton("등록")}}</div>
+  <div class="flex flex-col gap-4">{{caller()}}</div>
+</div>
+{% endmacro %} {% macro comment(name, context, time) %}
+<div>
+  <div class="flex justify-between">
+    <h3>{{ name }}</h3>
+    <h3>{{ time }}</h3>
+  </div>
+  <p class="text-sm text-plain_text">{{ context }}</p>
+  <hr class="my-2 border-gray-100" />
+</div>
+
+{%endmacro %} {% macro page_toggle(icon, text) %} {% if selected %}
 <a
   class="flex items-center rounded-full bg-primary text-card_bg px-4 py-2 gap-2"
   >{{icon|safe}}{{text}}</a
@@ -49,12 +81,18 @@
   >{{icon|safe}}{{text}}</a
 >
 {% endif %} {% endmacro %} {% macro searchbar(text) %}
-<form class="flex rounded-full gap-2 py-3 px-5 bg-search_bg w-full">
+<form
+  class="flex rounded-full gap-2 py-3 px-5 bg-search_bg w-full focus:outline-primary"
+>
   <i class="fa-solid fa-magnifying-glass"></i>
   <input
     type="text"
     placeholder="{{text}}"
-    class="bg-transparent outline-none focus:outline-primary w-full"
+    class="bg-transparent outline-none w-full"
   />
 </form>
-{% endmacro %}
+{% endmacro %} {% macro card(variant="default") %} {% set base_tags =
+"flexflex-col border rounded-lg bg-card_bg px-4 py-2 border-card_border shadow"
+%} {% set size_presets = { "postcard": "h-64 hover:drop-shadow-lg transition-all
+duration-100 cursor-pointer", "default": "", "profile" : "w-full h-52" } %} {{
+base_tags }} {{ size_presets[variant] }} {% endmacro %}

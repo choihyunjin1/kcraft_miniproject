@@ -2,13 +2,16 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import textwrap
+import json
+from flask import Blueprint, request, jsonify, current_app
+from ai_recommend import ai_recommend_bp
 
-from flask import request, jsonify, current_app
 
 
 # open_ai
 load_dotenv()
-open_gpt = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 # 
 def find_my_info(my_user_id):
@@ -24,6 +27,7 @@ def find_my_info(my_user_id):
     jg_batch = my_infomation["jungle_batch"]
     jg_class = my_infomation["jungle_class"]
     return my_infomation, jg_batch, jg_class
+
 
 def find_partner_candidates(my_user_id, jg_batch, jg_class):
     db = current_app.config["DB"]
@@ -55,20 +59,75 @@ def make_prompt(my_infomation, partner_candidates_list):
         사용자의 'signal_preferences'과 'user_introduction'의 일치율을 분석하여 사용자와 가장 합이 잘 맞을 것 같은 최적의 파트너 3명을 선정하라.
         partner_score는 동점자가 나오지 않도록 하시오.
 
-        [출력 형식(JSON)]
-        반드시 아래의 JSON 배열 형식으로만 답변하시오.
-        [
-            {{
-            "best_partner":"name",
-            "best_partner_id":"user_id",
-            "partner_score": 1~100 사이의 정수,
-            "reason":300자 내외의 문자열
-            }}
-        ]
-
+        [출력 형식]
+        결과는 반드시 지정된 JSON 스키마에 맞추어 배열 형태로 반환하시오.
         """
         )
     
     return template
 
-my_user_id = 'mj_1201'
+#
+
+# my_user_id = 'mj_1201'
+
+@ai_recommend_bp.route('/<user_id>', methods=['GET'])
+def get_ai_comment(user_id):
+    my_infomation, jungle_batch, jungle_class = find_my_info(user_id)
+    partner_candidates_list= find_partner_candidates(user_id, jungle_batch, jungle_class)
+    template = make_prompt(my_infomation, partner_candidates_list)
+
+    # call the open ai
+    response = openai_client.responses.create(
+        model = "gpt-4o",
+        input=[
+            {"role":"developer", "content":"사용자가 가장 잘 맞는 파트너 3명을 추천해주세요"},
+            {"role":"user", "content":template}
+        ],
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": "best_partner_info",
+                "schema": {
+
+                    "type": "object",
+                    # field definition
+                    "properties": {
+                    
+                        "partners": {
+                            "type" : "array",
+                            "items":{
+                                
+                                "type" : "object",
+                                "properties": {
+                                    
+                                    "best_partner": {
+                                        "type": "string"
+                                    },
+                                    "best_partner_id": {
+                                        "type": "string"
+                                    },
+                                    "partner_score": {
+                                        "type": "integer"
+                                    },
+                                    "reason": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["best_partner", "best_partner_id", "partner_score", "reason"],
+                                "additionalProperties": False
+                            }
+                        },
+                    },
+                    "required": ["partners"],
+                    "additionalProperties": False
+                    
+                },
+                "strict": True
+            }
+        }
+    )
+
+    ai_answer = json.loads(response.output[0].content[0].text)
+    print(ai_answer)
+    return jsonify(ai_answer)
+

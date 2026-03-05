@@ -1,0 +1,16 @@
+{% import 'components.html' as comp %} {% extends "base.html" %} {% block title
+%}글 보기{% endblock %} {% block content %}
+<div>
+  {{comp.postlong("김철수","#커피 #헬스", "주말 아침이면 항상 집 근처에 있는
+  작은 로스터리 카페에 들러 따뜻한 라떼 한 잔을 마시는 것이 소소한 루틴입니다.
+  갓 볶은 원두 특유의 고소한 향기와 부드러운 우유 거품이 어우러지면 한 주 동안
+  쌓였던 피로가 눈 녹듯 사라지는 기분이 들어요. 특히 비가 오는 날에는 창가
+  자리에 앉아 떨어지는 빗방울을 구경하며 책을 읽다 보면 시간이 어떻게 가는지
+  모를 정도로 푹 빠지게 되더라고요. 역시 커피는 여유를 마시는 음료인 것
+  같습니다.", "2시간 전")}} {% call comp.commentlist("3")%} {% for c in comments
+  %} {{ comp.comment(c.name, c.context, c.time) }} {% else %}
+  <p class="text-sm text-gray-400 py-4 text-center">
+    아직 작성된 댓글이 없습니다. 첫 댓글을 남겨보세요!
+  </p>
+  {% endfor %} {% endcall %} {% endblock %}
+</div>

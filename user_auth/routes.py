@@ -37,9 +37,10 @@ def register():
             "user_mail": user_mail,
             "user_introduction": user_introduction,
 
-            # 추가 저장
+           
             "jungle_batch": jungle_batch,
-            "jungle_class": jungle_class
+            "jungle_class": jungle_class,
+            "key_count": 0
         })
     except DuplicateKeyError:
         return jsonify({"result": "fail", "msg": "이미 존재하는 아이디"}), 409
@@ -93,10 +94,9 @@ def login():
 def group_members():
     db = current_app.config["DB"]
     user_id = (request.args.get("user_id") or "").strip()
-
     if not user_id:
         return jsonify({"result": "fail", "msg": "user_id 필수"}), 400
-
+    
     me = db.users.find_one({"user_id": user_id}, {"_id": 0, "jungle_batch": 1, "jungle_class": 1})
     if not me:
         return jsonify({"result": "fail", "msg": "존재하지 않는 user_id"}), 404
@@ -108,7 +108,8 @@ def group_members():
         },
         {
             "_id": 0,
-            "password_hash": 0
+            "password_hash": 0,
+            "key_count": 0
         }
     ))
 

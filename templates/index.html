@@ -1,62 +1,32 @@
-{% import 'components.html' as comp %}
+{% import 'components.html' as comp %} {% extends "base.html" %} {% block title
+%}홈{% endblock %}
 
-<!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="{{ url_for('static', filename='css/output.css') }}"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      defer
-      src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"
-    ></script>
-    <title>Document</title>
-  </head>
-  <body>
-    <div class="flex-col margin-left-20 margin-right-20">
-      <div class="fixed top-0 left-0 w-full px-10 py-4 bg-background">
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex-1">{{ comp.searchbar("찾기..") }}</div>
-
-          <div class="flex items-center gap-4">
-            {{ comp.page('<i class="fa-regular fa-house"></i>', "홈") }} {{
-            comp.page('<i class="fa-solid fa-person"></i>', "내 정보") }} {{
-            comp.outlinedText("열쇠 개수") }}
-          </div>
-        </div>
-      </div>
-
-      <div class="pt-20 px-10">
-        <div class="flex my-10 justify-between items-center">
-          <h2 class="text-2xl font-bold">훔쳐보기</h2>
-          <div class="flex gap-3">
-            {{comp.outlinedButton("글쓰기")}} {{comp.filledButton("뽑기")}}
-          </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {{comp.postcard("김철수","#커피 #헬스", "주말 아침이면 항상 집 근처에
-          있는 작은 로스터리 카페에 들러 따뜻한 라떼 한 잔을 마시는 것이 소소한
-          루틴입니다. 갓 볶은 원두 특유의 고소한 향기와 부드러운 우유 거품이
-          어우러지면 한 주 동안 쌓였던 피로가 눈 녹듯 사라지는 기분이 들어요.
-          특히 비가 오는 날에는 창가 자리에 앉아 떨어지는 빗방울을 구경하며 책을
-          읽다 보면 시간이 어떻게 가는지 모를 정도로 푹 빠지게 되더라고요. 역시
-          커피는 여유를 마시는 음료인 것 같습니다.", "2시간 전")}}
-          {{comp.postcard("사용자 텍스트입니다","#인스타그램", "지난 휴가 때
-          다녀왔던 바다의 푸른 풍경이 아직도 눈앞에 아른거립니다. 해안 도로를
-          따라 드라이브를 하며 맞았던 시원한 바닷바람과, 해 질 녘 수평선 너머로
-          붉게 물들던 노을은 정말 평생 잊지 못할 장관이었어요.", "3시간 전")}}
-          {{comp.postcard("사용자 텍스트입니다","#태그검색기능파이팅 #정글",
-          "글", "1일 전")}} {{comp.postcard("사용자 텍스트입니다","#태그1 #태그2
-          #영어 #asdfkjahsdlkfjhasidhf", "글", "2주일 전")}}
-        </div>
-      </div>
+<div class="flex-col">
+  {% block searchbar %}
+  <div class="flex-1">{{ comp.searchbar("찾기..") }}</div>
+  {% endblock %} {% block content %}
+  <div class="flex my-10 justify-between items-center">
+    <h2 class="text-2xl font-bold">훔쳐보기</h2>
+    <div class="flex gap-3">
+      {{comp.outlinedButton("글쓰기")}} {{comp.filledButton("뽑기")}}
     </div>
-  </body>
-</html>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {{comp.postcard("김철수","#커피 #헬스", "주말 아침이면 항상 집 근처에 있는
+    작은 로스터리 카페에 들러 따뜻한 라떼 한 잔을 마시는 것이 소소한 루틴입니다.
+    갓 볶은 원두 특유의 고소한 향기와 부드러운 우유 거품이 어우러지면 한 주 동안
+    쌓였던 피로가 눈 녹듯 사라지는 기분이 들어요. 특히 비가 오는 날에는 창가
+    자리에 앉아 떨어지는 빗방울을 구경하며 책을 읽다 보면 시간이 어떻게 가는지
+    모를 정도로 푹 빠지게 되더라고요. 역시 커피는 여유를 마시는 음료인 것
+    같습니다.", "2시간 전", url_for('post_detail'))}} {{comp.postcard("사용자
+    텍스트입니다","#인스타그램", "지난 휴가 때 다녀왔던 바다의 푸른 풍경이
+    아직도 눈앞에 아른거립니다. 해안 도로를 따라 드라이브를 하며 맞았던 시원한
+    바닷바람과, 해 질 녘 수평선 너머로 붉게 물들던 노을은 정말 평생 잊지 못할
+    장관이었어요.", "3시간 전")}} {{comp.postcard("사용자
+    텍스트입니다","#태그검색기능파이팅 #정글", "글", "1일 전")}}
+    {{comp.postcard("사용자 텍스트입니다","#태그1 #태그2 #영어
+    #asdfkjahsdlkfjhasidhf", "글", "2주일 전")}}
+  </div>
+</div>
+
+{% endblock %}
