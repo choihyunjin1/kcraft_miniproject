@@ -22,8 +22,8 @@ def create_cardset():
         "owner_id": user_id,
         "title": title,
         "cards": [],
-        "created_at": datetime(),
-        "updated_at": datetime()
+        "created_at": datetime.now(),
+        "updated_at": datetime.now()
     }
     res = db.card_sets.insert_one(doc)
 

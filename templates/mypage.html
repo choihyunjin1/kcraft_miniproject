@@ -1,6 +1,6 @@
 {% import 'components.html' as comp %} {% extends "base.html" %} {% block
 title%}내 정보{% endblock %} {% block content %} {{comp.profile(profile_name,
-profile_user_id, profile_intro) }}
+profile_user_id, profile_intro, hobbies) }}
 
 <div x-data="{tab : 1}" class="{{comp.card(variant='default')}} pt-4 pb-4">
   <div class="flex border-b border-gray-200 mb-6">

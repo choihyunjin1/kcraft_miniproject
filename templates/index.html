@@ -8,16 +8,15 @@
     <div class="flex gap-3">
       {{ comp.outlinedButton("글쓰기", "javascript:open_writing()") }}
       {{comp.filledpopupButton("뽑기 (열쇠 1개 소모)", onclick="play_gacha()")}}
-      {{ comp.filledpopupButton("로그인", onclick="location.href='/login'") }}
-      {{ comp.filledpopupButton("회원가입", onclick="location.href='/register'")
-      }} {{ comp.filledpopupButton("카드게임", onclick="go_cardgame()") }}
+      {{ comp.filledpopupButton("카드게임", onclick="go_cardgame()") }}
     </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for post in posts %} {{ comp.postcard(post.author, post.tag|join(' '),
-    post.content, time = post.created_at, url = url_for('posts.get_one_post',
-    pass_idx=post._id, user_id=user_id)) }} {% endfor %}
+    post.content, time = post.created_at.strftime('%Y-%m-%d %H:%M'), url =
+    url_for('posts.get_one_post', pass_idx=post._id, user_id=user_id),
+    post_id=post._id) }} {% endfor %}
   </div>
 </div>
 

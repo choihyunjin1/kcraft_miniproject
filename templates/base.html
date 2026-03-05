@@ -29,8 +29,9 @@
       <div class="flex items-center justify-between gap-4">
         {% block searchbar %} {% endblock %}
         <div class="flex ml-auto items-center gap-4">
-          {{ comp.page_toggle('<i class="fa-solid fa-eye"></i>', "홈", "/" ) }}
-          {{ comp.page_toggle('<i class="fa-solid fa-person"></i>', "내 정보",
+          {{ comp.page_toggle('<i class="fa-solid fa-eye"></i>', "홈",
+          url_for('home', user_id=request.args.get('user_id', '')) ) }} {{
+          comp.page_toggle('<i class="fa-solid fa-person"></i>', "내 정보",
           url_for('mypage', user_id=request.args.get('user_id', ''))) }}
           <div id="key-count-badge">
             {{ comp.outlinedText("열쇠 " ~ key_count ~ "개") }}
@@ -41,5 +42,40 @@
     <div class="pt-20 px-10 bg-background">
       {% block content %} {% endblock %}
     </div>
+
+    <script>
+      function open_popup(post_id) {
+        const user_id =
+          new URLSearchParams(window.location.search).get("user_id") || "";
+        if (!user_id) {
+          alert("로그인이 필요합니다.");
+          return;
+        }
+
+        if (confirm("열쇠 2개를 사용하여 이 글의 잠금을 해제하시겠습니까?")) {
+          const formData = new FormData();
+          formData.append("user_id", user_id);
+          formData.append("post_id", post_id);
+
+          fetch("/post/unlock", {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.result === "success") {
+                alert(data.msg);
+                location.reload(); // 새로고침하여 열린 내용 표시
+              } else {
+                alert(data.msg); // 열쇠 부족 등의 메시지
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              alert("서버 통신 중 오류가 발생했습니다.");
+            });
+        }
+      }
+    </script>
   </body>
 </html>

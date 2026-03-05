@@ -9,12 +9,12 @@
   모를 정도로 푹 빠지게 되더라고요. 역시 커피는 여유를 마시는 음료인 것
   같습니다.", "2시간 전")}} -->
   {{comp.postlong(post.author, post.tag|join(' '), post.content,
-  post.created_at)}}
+  post.created_at.strftime('%Y-%m-%d %H:%M'))}}
 
   <!-- comments -->
 
-  {% call comp.commentlist("3")%} {% for c in comments %} {{
-  comp.comment(c.name, c.context, c.time) }}
+  {% call comp.commentlist()%} {% for c in comments %} {{ comp.comment(c.name,
+  c.context, c.time) }}
 
   <!--  -->
   {% else %}
@@ -24,4 +24,25 @@
   </p>
   {% endfor %} {% endcall %}
 </div>
+
+<script>
+  function post_comment() {
+    const input_comment = document.getElementById("comment_content").value;
+    const pass_idx = "{{ post._id }}"; // 서버에서 넘겨준 post._id 사용
+    const user_id =
+      new URLSearchParams(window.location.search).get("user_id") || "";
+    fetch("/post/comment", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `pass_idx=${pass_idx}&input_comment=${encodeURIComponent(input_comment)}&user_id=${encodeURIComponent(user_id)}`,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result === "success") {
+          alert(data.msg);
+          location.reload();
+        }
+      });
+  }
+</script>
 {% endblock %}

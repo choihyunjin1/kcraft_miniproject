@@ -65,16 +65,21 @@ def mypage():
     profile_user_id = user_id or "user_id 없음"
     profile_intro = "자기소개가 없습니다."
     my_post = []
+    hobbies = [] # 초기화
 
     if user_id:
         user = db.users.find_one(
             {"user_id": user_id},
-            {"_id": 0, "name": 1, "user_id": 1, "user_introduction": 1}
+            {"_id": 0, "name": 1, "user_id": 1, "user_introduction": 1, "signal_preferences": 1} # signal_preferences 추가
         )
         if user:
             profile_name = user.get("name") or profile_name
             profile_user_id = user.get("user_id") or profile_user_id
             profile_intro = user.get("user_introduction") or profile_intro
+            
+            # 1값(선호)인 취미만 리스트로 추출
+            prefs = user.get("signal_preferences", {})
+            hobbies = [k for k, v in prefs.items() if v == 1]
 
         my_post = list(db.posts.find({"user_id": user_id}).sort("created_at", -1))
         for post in my_post:
@@ -85,6 +90,7 @@ def mypage():
         profile_name=profile_name,
         profile_user_id=profile_user_id,
         profile_intro=profile_intro,
+        hobbies=hobbies, # 추출한 hobbies 전달
         my_post=my_post,
         user_id=user_id,
     )
