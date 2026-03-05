@@ -18,9 +18,13 @@ def register():
     name = (data.get("name") or "").strip()
     gender = (data.get("gender")  or "").strip()
     user_mail = (data.get("user_mail") or "").strip()
+    user_introduction = (data.get("user_introduction") or "").strip()
 
-    if not user_id or not password or not name or not user_mail or not gender:
-        return jsonify({"result": "fail", "msg": "user_id, password, name, teg 필수"}), 400
+    jungle_batch = (data.get("jungle_batch") or "").strip()   # 예: "12"
+    jungle_class = (data.get("jungle_class") or "").strip()   # 예: "303"
+
+    if not user_id or not password or not name or not user_mail or not gender or not user_introduction or not jungle_batch or not jungle_class:
+        return jsonify({"result": "fail", "msg": "user_id, password, name, gender, user_mail, user_introduction, jungle_batch, jungle_class 필수"}), 400
 
     db = current_app.config["DB"]
     try:
@@ -31,9 +35,14 @@ def register():
             "gender": gender,
             "created_at": datetime.now(timezone.utc),
             "user_mail": user_mail,
+            "user_introduction": user_introduction,
+
+            # 추가 저장
+            "jungle_batch": jungle_batch,
+            "jungle_class": jungle_class
         })
     except DuplicateKeyError:
-        return jsonify({"result": "fail", "msg": "이미 존재하는 user_id"}), 409
+        return jsonify({"result": "fail", "msg": "이미 존재하는 아이디"}), 409
 
     now = datetime.now(timezone.utc)
     payload = {
@@ -78,4 +87,37 @@ def login():
         "msg": "로그인 성공",
         "access_token": token,
         "token_type": "Bearer"
+    }), 200
+
+@auth.route("/group-members", methods=["GET"])
+def group_members():
+    db = current_app.config["DB"]
+    user_id = (request.args.get("user_id") or "").strip()
+
+    if not user_id:
+        return jsonify({"result": "fail", "msg": "user_id 필수"}), 400
+
+    me = db.users.find_one({"user_id": user_id}, {"_id": 0, "jungle_batch": 1, "jungle_class": 1})
+    if not me:
+        return jsonify({"result": "fail", "msg": "존재하지 않는 user_id"}), 404
+
+    members = list(db.users.find(
+        {
+            "jungle_batch": me["jungle_batch"],
+            "jungle_class": me["jungle_class"]
+        },
+        {
+            "_id": 0,
+            "password_hash": 0
+        }
+    ))
+
+    return jsonify({
+        "result": "success",
+        "group": {
+            "jungle_batch": me["jungle_batch"],
+            "jungle_class": me["jungle_class"]
+        },
+        "count": len(members),
+        "members": members
     }), 200
