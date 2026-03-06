@@ -26,8 +26,8 @@
   </head>
   <body>
     <div class="fixed z-50 top-0 left-0 w-full px-10 py-4 bg-white">
-      <div class="flex items-center justify-between gap-4">
-        {% block searchbar %} {% endblock %}
+      <div class="flex items-center gap-4">
+        <div class="flex-1">{% block searchbar %} {% endblock %}</div>
         <div class="flex ml-auto items-center gap-4">
           {{ comp.page_toggle('<i class="fa-solid fa-eye"></i>', "홈",
           url_for('home', user_id=request.args.get('user_id', '')) ) }} {{

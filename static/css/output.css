@@ -674,6 +674,10 @@ video {
   margin-top: 0.25rem;
 }
 
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
 .line-clamp-4 {
   overflow: hidden;
   display: -webkit-box;
@@ -715,6 +719,14 @@ video {
 
 .h-96 {
   height: 24rem;
+}
+
+.\!h-80 {
+  height: 20rem !important;
+}
+
+.\!h-64 {
+  height: 16rem !important;
 }
 
 .min-h-0 {

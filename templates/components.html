@@ -36,13 +36,13 @@
 {% endmacro %} {% macro postcard(name, tags, context, time, url = "#", post_id =
 "") %}
 <a
-  class="{{ card(variant='postcard') }} transition-all duration-300 {% if context == 'dufthlwkarma' %} !bg-gradient-to-br from-gray-50 to-gray-200 !border-gray-300 {% endif %}"
+  class="{{ card(variant='postcard') }} !h-64 relative transition-all duration-300 {% if context == 'dufthlwkarma' %} !bg-gradient-to-br from-gray-50 to-gray-200 !border-gray-300 {% endif %}"
   href="{{url}}"
   id="post-card-{{ post_id }}"
 >
   <h3 class="text-2xl font-bold font-plain_text pt-4 pb-1">{{ name }}</h3>
   <span class="text-xs text-primary pb-3">{{ tags }}</span>
-  <hr class="my-2 border-gray-100" />
+  <hr class="my-2 border-gray-100 pb-2" />
 
   <div class="flex-1 flex flex-col min-h-0">
     {% if context == "dufthlwkarma" %}
@@ -79,27 +79,27 @@
   </div>
 </div>
 {% endmacro %} {% macro commentlist() %}
-<div class="pt-4 {{ card(variant='default') }}">
+<div class="pt-4 pb-4 {{ card(variant='default') }}">
   <h4 class="font-bold pb-4">Comments</h4>
   <textarea
     id="comment_content"
-    class="..."
+    class="... mb-4 px-4 py-4 border-2 focus:outline-none focus:border-primary"
     rows="4"
     placeholder="댓글 쓰기"
   ></textarea>
-  <div class="flex justify-end mx-2">
+  <div class="flex justify-end mx-2 pb-6">
     {{outlinedButton("등록", onclick="post_comment()")}}
+    <hr class="my-2 border-gray-100" />
   </div>
   <div class="flex flex-col gap-4">{{caller()}}</div>
 </div>
 {% endmacro %} {% macro comment(name, context, time) %}
-<div>
-  <div class="flex justify-between">
+<div class="{{card(variant='no_shadow')}} pb-4">
+  <div class="flex py-2 justify-between">
     <h3>{{ name }}</h3>
     <h3>{{ time }}</h3>
   </div>
   <p class="text-sm text-plain_text">{{ context }}</p>
-  <hr class="my-2 border-gray-100" />
 </div>
 
 {%endmacro %} {% macro page_toggle(icon, text, url = "#") %} {% if selected %}
@@ -215,8 +215,9 @@
   </div>
 </div>
 {% endmacro %} {% macro card(variant="default") %} {% set base_tags = "flex
-flex-col border rounded-lg bg-card_bg px-4 py-2 border-card_border shadow
-drop-shadow-md" %} {% set size_presets = { "postcard": "h-64
-hover:drop-shadow-lg transition-all duration-100 cursor-pointer", "default": "",
-"profile" : "w-full h-52", "popup" : "w-96 h-96" } %} {{base_tags }} {
-size_presets[variant] }} {% endmacro %}
+flex-col border rounded-lg bg-card_bg px-4 py-2 border-card_border " %} {% set
+size_presets = { "postcard": "h-64 hover:drop-shadow-lg transition-all
+duration-100 cursor-pointer shadow drop-shadow-md", "default": "shadow
+drop-shadow-md", "profile" : "w-full h-52 shadow drop-shadow-md", "popup" :
+"w-96 h-96 shadow drop-shadow-md", "no_shadow":"" } %} {{base_tags }} {
+size_presets[variant] } {% endmacro %}

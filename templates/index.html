@@ -1,7 +1,6 @@
 {% import 'components.html' as comp %} {% extends "base.html" %} {% block title
-%}홈{% endblock %} {% block searchbar %}
-<div class="flex-1">{{ comp.searchbar("찾기..", q or "", user_id or "") }}</div>
-{% endblock %} {% block content %}
+%}홈{% endblock %} {% block searchbar %} {{ comp.searchbar("찾기..", q or "",
+user_id or "") }} {% endblock %} {% block content %}
 <div class="flex flex-col">
   <div class="flex my-10 justify-between items-center">
     <h2 class="text-2xl font-bold">훔쳐보기</h2>
